@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Menu buttons.
@@ -40,7 +41,7 @@ public class MenuButtons : MonoBehaviour {
 	void Start () {
 	
 		// When play button is clicked, we load the level mentioned from inspector, here, its "1"
-		playAction = () => { Application.LoadLevel(PlayLevel); };
+		playAction = () => { SceneManager.LoadScene(PlayLevel); };
 		PlayButton.onClick.AddListener(playAction);
 
 		// By default we disable the settings screen Ui, we'll show it when user clicks settings button

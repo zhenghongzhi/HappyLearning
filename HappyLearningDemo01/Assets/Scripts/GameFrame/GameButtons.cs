@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Game buttons.
@@ -72,11 +73,11 @@ public class GameButtons : MonoBehaviour {
 		ResumeButton.onClick.AddListener(resumeAction);
 
 		// When replay button is clicked, we simply re-start Game level
-		replayAction = () => { Application.LoadLevel(Application.loadedLevel); };
+		replayAction = () => { SceneManager.LoadScene(Application.loadedLevel); };
 		ReplayButton.onClick.AddListener(replayAction);
 
 		// When Home button is clicked, we load Menu Screen using method gotoHome();
-		homeAction = () => { gotoHome(); };
+		homeAction = () => { GotoHome(); };
 		HomeButton.onClick.AddListener(homeAction);
 		HomeButtonOver.onClick.AddListener(homeAction); // Same action is used since they both do same task 
 
@@ -126,9 +127,9 @@ public class GameButtons : MonoBehaviour {
 	}
 
 	// Method to run when Home button is clicked
-	private void gotoHome(){
+	private void GotoHome(){
 		GameScene.gamePaused = false; 		// The variable paused is false if this is cliked
-		Application.LoadLevel(HomeLevel); 	// Load the home screen level
+		SceneManager.LoadScene(HomeLevel); 	// Load the home screen level
 		Time.timeScale = 1;					// Time scale should be 1
 	}
 

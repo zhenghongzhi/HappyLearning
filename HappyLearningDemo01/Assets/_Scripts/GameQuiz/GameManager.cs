@@ -1,17 +1,3 @@
-/*
-http://www.cgsoso.com/forum-211-1.html
-
-CG搜搜 Unity3d 每日Unity3d插件免费更新 更有VIP资源！
-
-CGSOSO 主打游戏开发，影视设计等CG资源素材。
-
-插件如若商用，请务必官网购买！
-
-daily assets update for try.
-
-U should buy the asset from home store if u use it in your project!
-*/
-
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
@@ -71,12 +57,16 @@ public class GameManager : MonoBehaviour
         Vector3 pos = friendPos;
         friendAnimator.transform.localPosition = new Vector3(pos.x * 3f, pos.y, pos.z);
         pos = enemyPos;
+
         enemyAnimator.transform.localPosition = new Vector3(pos.x * 3f, pos.y, pos.z);
         pos = friendHpPos;
+
         friendHpGroup.localPosition = new Vector3(pos.x * 5f, pos.y, pos.z);
         pos = enemyHpPos;
+
         enemyHpGroup.localPosition = new Vector3(pos.x * 5f, pos.y, pos.z);
         shieldGroup.localScale = new Vector3(2f, 2f, 1f);
+
         pos = shieldPos;
         shieldGroup.localPosition = new Vector3(pos.x, 0f, pos.z);
     }
@@ -172,6 +162,7 @@ public class GameManager : MonoBehaviour
     {
         friendAnimator.CrossFade("Walk", 0.2f);
         enemyAnimator.CrossFade("Walk", 0.2f);
+
         Vector3 pos = friendPos;
         friendAnimator.transform.localPosition = new Vector3(pos.x * 3f, pos.y, pos.z);
         TweenParms parms = new TweenParms().Prop("localPosition", friendPos).Ease(EaseType.Linear).OnComplete(OnFriendStop);
@@ -287,7 +278,7 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape)) Application.Quit();
         if (Input.GetButton("Fire1"))
         {
-            //DrawQuiz();
+            DrawQuiz();
         }
 	}
 
@@ -297,7 +288,7 @@ public class GameManager : MonoBehaviour
         quizOn = false;
         QuizData item = quizList[quizIndex];
 
-        // Is answer collect?
+        // Is answer correct?
         if (item.correct == no) 
         {
             // Display good Effect

@@ -30,16 +30,23 @@ public class PlayGame : MonoBehaviour {
 
     // 所在弹簧
     public Transform Spring;
-    // 猴子
-    //public Transform Monkey;
+    //单词画布的位置
+    // 领袖
+    //public Transform Head;
 
+    public Transform WordCanvasPos;
+    
 
     // 第一个盒子物体
     public GameObject Stage;
+    //第一个单词
+    public GameObject WordCanvas;
     // 粒子效果
     public GameObject Particle;
    // 盒子仓库，可以放上各种盒子的prefab，用于动态生成。
     public GameObject[] BoxTemplates;
+    //单词仓库， 可以放上各种单词，用于动态生成。
+    public GameObject[] WordTemplates;
     // 保存分数面板
     public GameObject SaveScorePanel;
     // 排行数据的姓名
@@ -54,6 +61,9 @@ public class PlayGame : MonoBehaviour {
     public Text TotalScoreText;
     // 飘分效果的单个UI组件
     public Text SingleScoreText;
+    //单词显示的UI
+    public Text WordText;
+    //
     // 名字输入框
     public InputField NameField;
     // 保存按钮
@@ -83,6 +93,8 @@ public class PlayGame : MonoBehaviour {
 
     //玩家实时着落的当前台子
     private GameObject _currentStage;
+    //实时显示的单词
+    private GameObject _currentWord;
 
     //相机与玩家的相对位置
     private Vector3 _cameraRelativePosition;
@@ -106,9 +118,14 @@ public class PlayGame : MonoBehaviour {
 
         //将初始台子赋值给实时台子
         _currentStage = Stage;
+        //将初始单词赋给实时单词
+        _currentWord = WordCanvas;
 
         //调用生成台子的方法
         SpawnStage();
+
+        //调用生成单词的方法
+        ShowWords();
 
         //给相机与小人的相对位置赋值
         _cameraRelativePosition = Camera.main.transform.position - transform.position;
@@ -120,6 +137,52 @@ public class PlayGame : MonoBehaviour {
 
         //获取外部的LeaCloud密钥 
         _leanCloud = new LeanCloudRestAPI(LeanCloudAppId, LeanCloudAppKey);
+    }
+
+    private void ShowWords()
+    {
+
+        //定义一个单词的预制体用来存放原始台子集合中的其中一个
+        GameObject wordprefab;
+
+        //判断单词集合的数量大于0则执行
+        if (WordTemplates.Length > 0)
+        {
+            // 从单词库中随机取出一个单词赋值给前面的预制体以便进行动态生成
+            wordprefab = WordTemplates[Random.Range(0, BoxTemplates.Length)];
+            //调用动态生成的方法生成单词 并用一个变量存取便于后续操作
+            var word = Instantiate(wordprefab,WordCanvasPos);
+            //调整生成的单词的位置 随机位置生成
+            word.transform.position = _currentStage.transform.position + _direction * Random.Range(1.1f, MaxDistance) + new Vector3(0, 0.3f, 0);
+
+            //将克隆的单词赋实时单词
+            _currentWord = word;
+        }
+        //若存放单词模型的集合内没有就把当前小人所在的单词赋值给预制体
+        else
+        {
+            wordprefab = WordCanvas;
+            //调用动态生成的方法生成单词 并用一个变量存取便于后续操作
+            var word = Instantiate(wordprefab);
+            //调整生成的单词的位置 随机位置生成
+            word.transform.position = _currentStage.transform.position + _direction * Random.Range(1.5f, MaxDistance) + new Vector3(0, 0.3f, 0);
+
+            //将克隆的单词赋实时单词
+            _currentWord = word;
+           
+
+        }
+       
+
+        
+        //定义一个可以随机缩放的随机数
+        //var randomScale = Random.Range(1, 1.2f);
+        //随机调整单词的大小
+        //word.transform.localScale = new Vector3(randomScale, 1, randomScale);
+
+        //重载函数 或 重载方法 随机调整台子的颜色
+        //word.GetComponent<Renderer>().material.color =
+          //  new Color(Random.Range(0f, 1), Random.Range(0f, 1), Random.Range(0f, 1));
     }
 
     //处理点击上传分数按钮
@@ -214,10 +277,10 @@ public class PlayGame : MonoBehaviour {
         //调用动态生成的方法并用一个变量存取便于后续操作
         var stage = Instantiate(prefab);
         //调整生成的台子的位置 随机位置生成
-        stage.transform.position = _currentStage.transform.position + _direction * Random.Range(1.1f, MaxDistance);
+        stage.transform.position = _currentStage.transform.position + _direction * Random.Range(1.5f, MaxDistance);
 
         //定义一个可以随机缩放的随机数
-        var randomScale = Random.Range(0.5f, 1);
+        var randomScale = Random.Range(1.5f, 2f);
         //随机调整台子的大小
         stage.transform.localScale = new Vector3(randomScale, 0.5f, randomScale);
 
@@ -260,6 +323,11 @@ public class PlayGame : MonoBehaviour {
                 _currentStage.transform.DOLocalMoveY(-0.25f, 0.2f);
                 _currentStage.transform.DOScaleY(0.5f, 0.2f);
 
+                //让之前的单词消失
+                DestroyWord();
+               
+
+
                 //将是否按下鼠标的状态设置为否
                 _enableInput = false;
             }
@@ -288,6 +356,11 @@ public class PlayGame : MonoBehaviour {
             UpdateScoreAnimation();
     }
 
+    private void DestroyWord()
+    {
+        _currentWord.transform.DOLocalMoveZ(40, 0.2f);
+    }
+
     //更新飘分效果
     private void UpdateScoreAnimation()
     {
@@ -306,7 +379,7 @@ public class PlayGame : MonoBehaviour {
         //控制飘分内容的颜色的渐变由黑色到透明
         SingleScoreText.color = Color.Lerp(Color.black, new Color(0, 0, 0, 0), Time.time - _scoreAnimationStartTime);
     }
-    
+
     //跳跃
     private void OnJump(float elapse)
     {
@@ -333,10 +406,12 @@ public class PlayGame : MonoBehaviour {
                 //检测玩家是否成功平稳地落在接触物上
                 if (contacts.Length == 4 && contacts[0].normal == Vector3.up)//数组的长度就是这个接触集合是否为1（是否落到台子上），数组的法线是否是向上的（小人直立状态）
                 {
-                    _currentStage = collision.gameObject;//将当前的游戏对象赋值给当前的盒子
+                    _currentStage = collision.gameObject;//将当前的游戏对象赋值给当前的盒子                                                                         
                     AddScore(contacts);
                     RandomDirection();
                     SpawnStage();
+                    ShowWords();
+                    //_currentWord.transform.DOLocalMoveY(-0.3f, 0.2f);//还原单词的形状
                     MoveCamera();
 
                     _enableInput = true;//可以继续进行点击鼠标
@@ -363,6 +438,7 @@ public class PlayGame : MonoBehaviour {
         }
     }
 
+    
     //游戏结束的方法
     private void OnGameOver()
     {
@@ -370,11 +446,13 @@ public class PlayGame : MonoBehaviour {
         {
             //本局游戏结束，如果得分大于0，显示上传分数panel
             SaveScorePanel.SetActive(true);
+            _enableInput = false;
         }
         else
         {
             //否则直接显示排行榜
             ShowRankPanel();
+            _enableInput = false;
         }
     }
 
@@ -436,4 +514,6 @@ public class PlayGame : MonoBehaviour {
         //给飘分内容进行复制
         SingleScoreText.text = "+" + _lastReward;
     }
+
+
 }

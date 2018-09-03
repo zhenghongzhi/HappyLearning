@@ -5,42 +5,40 @@ using System.Collections.Generic;
 using Holoville.HOTween;
 using Holoville.HOTween.Plugins;
 
-/// <summary>
-/// Game Manager Main Class.
-/// </summary>
 public class GameManager : MonoBehaviour
 {
-    // Effect Prefab
+    // 效果预制体
     public GameObject goodEffect, badEffect, soulEffect, happyEffect;
-    // Actor Animator Component
+    // 角色动画组件
     public Animator friendAnimator, enemyAnimator;
-    // Actor HP Manager Component
+    // 角色血量管理动画组件
     public HpManager friendHpMan, enemyHpMan;
 
-    // Save Start Position
+    // 用来保存开始位置
     Vector3 friendPos, enemyPos, friendHpPos, enemyHpPos, shieldPos;
     Transform friendHpGroup, enemyHpGroup, shieldGroup;
 
-    // Save Question & Answer Display Position
+    // 用来保存提问和选项的展示位置
     Transform questionTf;
     Transform[] answerTfs;
     Text questionLabel;
     Text[] answerLabels;
 
-    // Quiz List Array
+    // 提问的列表（数组）
     List<QuizData> quizList;
     int quizTotal;
     int quizIndex = 0;
 
+    //隐藏问题长度的调整框
     [HideInInspector]
     public int quizLength = 0;
 
-    // Quiz Condition
+    //问题的条件
     bool quizOn = true;
 
     void Awake()
     {
-        // Set mobile display res.
+        // 设置屏幕分辨率
         Screen.SetResolution(1920, 1080, false); 
     }
     void Start()
@@ -50,7 +48,7 @@ public class GameManager : MonoBehaviour
         //StartGame();
     }
 
-    // Hide game interface for next quiz
+    // 为了下一个提问隐藏游戏面板
     void HideGame()
     {
         ClearQuiz();
@@ -71,14 +69,14 @@ public class GameManager : MonoBehaviour
         shieldGroup.localPosition = new Vector3(pos.x, 0f, pos.z);
     }
 
-    // Start game & draw next quiz
+    // 开始游戏并设置新的提问
     public void StartGame()
     {
         IntroGame();
         DrawQuiz();
     }
 
-    // Draw Quiz
+    // 设置新提问
     void DrawQuiz()
     {
         HideQuiz();
@@ -89,7 +87,7 @@ public class GameManager : MonoBehaviour
         }));
     }
 
-    // Init Quiz List
+    // 初始化提问列表
     void QuizInit()
     {
         quizList = new List<QuizData>();
@@ -129,7 +127,7 @@ public class GameManager : MonoBehaviour
         quizTotal = quizList.Count;
     }
 
-    // Init Quiz Game
+    // 初始化游戏
     void InitGame()
     {
         friendHpMan.InitHp();
@@ -157,7 +155,7 @@ public class GameManager : MonoBehaviour
         enemyHpPos = enemyHpGroup.localPosition;
     }
 
-    // Draw quiz intro motion
+    // 设置游戏初始动画
     void IntroGame()
     {
         friendAnimator.CrossFade("Walk", 0.2f);
@@ -193,19 +191,19 @@ public class GameManager : MonoBehaviour
         HOTween.To(enemyHpGroup, 1f, parms);
     }
 
-    // Stop Friend Actor Animation.
+    // 让队友停止动画 默认状态
     void OnFriendStop()
     {
         friendAnimator.CrossFade("Idle", 0.2f);
     }
 
-    // Stop Enemy Actor Animation.
+    // 让对手停止动画 默认状态
     void OnEnemyStop()
     {
         enemyAnimator.CrossFade("Idle", 0.2f);
     }
 
-    // Clear Quiz Display
+    // 清除游戏显示
     void ClearQuiz()
     {
         questionTf.localScale = new Vector3(0f, 1f, 1f);
@@ -217,7 +215,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Hide quiz motion 
+    // 隐藏问题动画 
     void HideQuiz()
     {
         TweenParms parms = new TweenParms().Prop("localScale", new Vector3(0f, 1f, 1f));
@@ -231,13 +229,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Display Quiz Question like typewriter
+    // 像打字机一样显示问答题
     void TypeQuiz()
     {
         questionLabel.text = quizList[quizIndex].question.Substring(0, quizLength);
     }
 
-    // Show Quiz Display Motion
+    // 显示问答动画
     void ShowQuiz()
     {
         TweenParms parms = new TweenParms().Prop("localScale", new Vector3(1f, 1f, 1f));
@@ -255,13 +253,13 @@ public class GameManager : MonoBehaviour
         HOTween.To(this, 1f, parms);
     }
 
-    // Make String Max Length
+    // 设置字符串的最大长度
     string QuizMakeString(string str) 
     {
         return (str.Length > 41) ? str.Substring(0, 40) : str;
     }
 
-    // set Quiz Answer & Question variables
+    // 设置问题和回答的变量
     void SetQuiz()
     {
         quizIndex = Random.Range(0, quizTotal) % quizTotal;
@@ -274,7 +272,7 @@ public class GameManager : MonoBehaviour
     }
     
 	void Update () {
-        // Quit Application
+        // 退出方式
         if (Input.GetKeyDown(KeyCode.Escape)) Application.Quit();
         
 	}
@@ -327,6 +325,7 @@ public class GameManager : MonoBehaviour
         }));
     }
 
+    //点击回答选项后的对应方法
     public void OnClickAnswer1()
     {
         ClickAnswer(0);
@@ -344,7 +343,7 @@ public class GameManager : MonoBehaviour
         ClickAnswer(3);
     }
 
-    // time delay action
+    // 时间延迟的动作
     public IEnumerator DelayActoin(float dtime, System.Action callback)
     {
         yield return new WaitForSeconds(dtime);

@@ -41,7 +41,7 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         // Set mobile display res.
-        Screen.SetResolution(640, 960, false); 
+        Screen.SetResolution(1920, 1080, false); 
     }
     void Start()
     {
@@ -276,10 +276,7 @@ public class GameManager : MonoBehaviour
 	void Update () {
         // Quit Application
         if (Input.GetKeyDown(KeyCode.Escape)) Application.Quit();
-        if (Input.GetButton("Fire1"))
-        {
-            DrawQuiz();
-        }
+        
 	}
 
     void ClickAnswer(int no)
